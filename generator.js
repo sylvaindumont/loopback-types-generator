@@ -130,12 +130,14 @@ module.exports = function generate(ctx) {
         }
       });
     }
-    // Add GeoPoint custom type import
+    const baseTypes = ['string', 'number', 'boolean', 'Date', 'any', 'object']
+    // Add custom type import
     Object.keys(model.properties).forEach((property) => {
-      var geoPointType = buildPropertyType(model.properties[property]);
-      var hasGeoPointType = geoPointType.indexOf('GeoPoint') !== -1;
-      if(hasGeoPointType) {
-          output.push('  GeoPoint');
+      var type = buildPropertyType(model.properties[property]);
+      type = type.replace(/\[\]/, '');
+      var isCustomType = !baseTypes.some(baseType => baseType === type);
+      if(isCustomType && !output.some(imp => imp === `  ${type}`)) {
+          output.push(`  ${type}`);
       }
     });
     if(output.length > 0) {
@@ -200,7 +202,7 @@ module.exports = function generate(ctx) {
       property.type = property;
     }
     if (!property || !property.type) {
-      console.log(property)
+      // console.log(property)
       return 'any';
     }
     switch (typeof property.type) {
@@ -213,6 +215,8 @@ module.exports = function generate(ctx) {
           case 'Date':
           case 'GeoPoint':
             return property.type.name;
+          case 'ModelConstructor':
+            return capitalize(property.type.sharedClass.name);
           default:
             return 'any';
         }
@@ -222,6 +226,7 @@ module.exports = function generate(ctx) {
         }
         return 'object';
       default:
+        // console.log(property.type.name)
         return 'any';
     }
   }

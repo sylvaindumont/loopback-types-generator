@@ -13,8 +13,6 @@ var context = {
   moduleName: 'sdk',
   apiUrl: '/api',
   outputFolder: process.argv[3],
-  isIo: 'disabled',
-  driver: 'ng2web',
   wipe: 'disabled',
   defaultValue: 'disabled',
   fireloopOnly: 'disabled',
