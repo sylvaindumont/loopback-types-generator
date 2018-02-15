@@ -218,6 +218,12 @@ module.exports = function generate(ctx) {
           case 'ModelConstructor':
             return capitalize(property.type.sharedClass.name);
           default:
+            const type = capitalize(property.type.name)
+            if (type.startsWith('Object')) {
+              return 'any'
+            } else {
+              return capitalize(property.type.name);
+            }
             return 'any';
         }
       case 'object':
