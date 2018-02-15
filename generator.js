@@ -8,7 +8,6 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-var rmdir = require('rimraf');
 var ejs = require('ejs');
 var utils = require('./utils');
 var _ = require('underscore');
@@ -31,11 +30,6 @@ module.exports = function generate(ctx) {
    */
   ctx.outputFolder = path.resolve(ctx.outputFolder);
 
-  if (!ctx.quiet) {
-    console.log('Removing base directory %s', ctx.outputFolder);
-  }
-
-  rmdir.sync(ctx.outputFolder);
   // Create required directories
   let directories = [
     ctx.outputFolder,
@@ -48,7 +42,7 @@ module.exports = function generate(ctx) {
   ctx.loadAccessToken = (ctx.models.AccessToken ? false : true);
 
   if (!ctx.quiet) {
-    console.log('DRIVER: ', ctx.driver);
+    // console.log('DRIVER: ', ctx.driver);
   }
 
   /**
@@ -57,7 +51,7 @@ module.exports = function generate(ctx) {
   let schema = [
     {
       template: './index.ejs',
-      output: '/index.ts',
+      output: '/index.d.ts',
       params: {
         isIo: ctx.isIo,
         models: ctx.models
@@ -65,7 +59,7 @@ module.exports = function generate(ctx) {
     },
     {
       template: './base.ejs',
-      output: '/BaseModels.ts',
+      output: '/BaseModels.d.ts',
       params: { loadAccessToken: ctx.loadAccessToken }
     },
 
@@ -74,11 +68,11 @@ module.exports = function generate(ctx) {
    * SDK DYNAMIC FILES
    */
   Object.keys(ctx.models).forEach(modelName => {
-    console.info('LoopBack SDK Builder: adding %s model to SDK', modelName);
+    // console.info('LoopBack SDK Builder: adding %s model to SDK', modelName);
     schema.push(
       {
         template: './model.ejs',
-        output: '/' + modelName + '.ts',
+        output: '/' + modelName + '.d.ts',
         params: {
           model: ctx.models[modelName],
           modelName: modelName,
@@ -99,7 +93,7 @@ module.exports = function generate(ctx) {
   schema.forEach(
     config => {
       if (!ctx.quiet) {
-        console.info('Generating: %s', `${ctx.outputFolder}${config.output}`);
+        // console.info('Generating: %s', `${ctx.outputFolder}${config.output}`);
       }
 
       fs.writeFileSync(

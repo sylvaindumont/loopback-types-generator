@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/node": "^7.0.22",
     "ejs": "1.0",
+    "globby": "^8.0.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "ts-node": "^3.0.4",

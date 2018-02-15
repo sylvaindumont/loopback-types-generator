@@ -3,7 +3,9 @@
 require('ts-node/register');
 var path = require('path');
 var generator = require('./generator');
-
+const fs = require('fs');
+const globby = require('globby');
+const promisify = require('util').promisify;
 var appFile = path.resolve(process.argv[2]);
 var app = require(appFile);
 
@@ -22,19 +24,12 @@ var context = {
 
 app.once('booted', runGenerator);
 
-function runGenerator() {
-  // Load Selected Generator
-
-  //try {
+async function runGenerator() {
+	const paths = await globby([`${process.argv[3]}*.ts`]);
+  await Promise.all(paths.map(path => promisify(fs.unlink)(path)));
   generator(context);
+  console.log('types generated')
 
-  if (!context.quiet) {
-    console.info('\n\nEnjoy!!!');
-  }
-
-  //} catch (err) {
-  //  throw new Error(err);
-  //}
   // The app.js scaffolded by `slc lb project` loads strong-agent module that
   // used to have a bug where it prevented the application from exiting.
   // To work around that issue, we are explicitly exiting here.
